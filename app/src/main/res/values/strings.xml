@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Tomacco Timer</string>
     <string name="clock_start">Start</string>
+    <string name="clock_stop">Stop</string>
     <string name="clock_reset">Reset</string>
-    <string name="display_start">00:00</string>
+    <string name="display_start">00:10</string>
+    <string name="tomato_desc">This Tomato will slowly morph into a Tomacco</string>
 </resources>
