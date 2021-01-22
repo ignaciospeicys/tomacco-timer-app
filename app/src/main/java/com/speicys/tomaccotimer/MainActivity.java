@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        updateTextClock(ConstVal.Clock.ORIGINAL_CLOCK_MINUTES, ConstVal.Clock.ORIGINAL_CLOCK_SECONDS);
     }
 
     public void onStartClick(View view) {
