@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.speicys.tomaccotimer.constant.ConstantValues;
+import com.speicys.tomaccotimer.constant.ConstVal;
 import com.speicys.tomaccotimer.enums.ClockStateEnum;
 import com.speicys.tomaccotimer.enums.TomaccoStateEnum;
 import com.speicys.tomaccotimer.util.StringUtils;
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
         switch (clockState) {
 
             case NOT_STARTED:
-                createTimer(ConstantValues.OG_CLOCK_DURATION_MILIS, ConstantValues.TICK_INTERVAL_SECOND);
+                createTimer(ConstVal.Clock.OG_CLOCK_DURATION_MILIS, ConstVal.Clock.TICK_INTERVAL_SECOND);
                 buttonText = getString(R.string.clock_stop);
                 newState = ClockStateEnum.STARTED;
                 break;
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
             case PAUSED:
                 long newMillis = ((minutes * 60) + seconds) * 1000;
-                createTimer(newMillis, ConstantValues.TICK_INTERVAL_SECOND);
+                createTimer(newMillis, ConstVal.Clock.TICK_INTERVAL_SECOND);
                 buttonText = getString(R.string.clock_stop);
                 newState = ClockStateEnum.STARTED;
                 break;
@@ -86,12 +88,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 ImageView tomato = findViewById(R.id.tomatoView);
+                resetGlobalClock();
+                loadScalingAnimation(tomato);
                 tomaccoState.nextStage();
                 tomato.setImageResource(tomaccoState.getDrawableId());
-                resetGlobalClock();
             }
         };
         timer.start();
+    }
+
+    private void loadScalingAnimation(ImageView view) {
+        Animation scaleDownAnimation = AnimationUtils.loadAnimation(this, R.anim.shrink_and_grow);
+        view.startAnimation(scaleDownAnimation);
     }
 
     private void updateTextClock(Integer minutes, Integer seconds) {
@@ -107,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         clockState = ClockStateEnum.NOT_STARTED;
         timer.cancel();
-        updateTextClock(ConstantValues.ORIGINAL_CLOCK_MINUTES, ConstantValues.ORIGINAL_CLOCK_SECONDS);
+        updateTextClock(ConstVal.Clock.ORIGINAL_CLOCK_MINUTES, ConstVal.Clock.ORIGINAL_CLOCK_SECONDS);
         Button startButton = findViewById(R.id.startClockButton);
         startButton.setText(R.string.clock_start);
     }
