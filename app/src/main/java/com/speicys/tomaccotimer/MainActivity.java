@@ -6,21 +6,30 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.speicys.tomaccotimer.constant.ConstantValues;
 import com.speicys.tomaccotimer.enums.ClockStateEnum;
+import com.speicys.tomaccotimer.enums.TomaccoStateEnum;
 import com.speicys.tomaccotimer.util.StringUtils;
-
-import java.time.Clock;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final Long ORIGINAL_DURATION = 10000l;
-    private static final Long TICK_INTERVAL = ORIGINAL_DURATION / 10;
-
+    /**
+     * Always holds the latest CountDownTimer reference
+     */
     private CountDownTimer timer;
 
-    private ClockStateEnum state = ClockStateEnum.NOT_STARTED;
+    /**
+     * ClockStateEnum is used to keep a track of the current clock state
+     */
+    private ClockStateEnum clockState = ClockStateEnum.NOT_STARTED;
+
+    /**
+     * TomaccoStateEnum keeps a global track of Tomacco States, only stored on memory for now
+     */
+    private TomaccoStateEnum tomaccoState = TomaccoStateEnum.VANILLA;
 
     private Integer minutes;
     private Integer seconds;
@@ -31,15 +40,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
-    public void startClock(View view) {
+    public void onStartClick(View view) {
         Button button = (Button) view;
         String buttonText = null;
         ClockStateEnum newState = null;
 
-        switch (state) {
+        switch (clockState) {
 
             case NOT_STARTED:
-                createTimer(ORIGINAL_DURATION, TICK_INTERVAL);
+                createTimer(ConstantValues.OG_CLOCK_DURATION_MILIS, ConstantValues.TICK_INTERVAL_SECOND);
                 buttonText = getString(R.string.clock_stop);
                 newState = ClockStateEnum.STARTED;
                 break;
@@ -52,26 +61,17 @@ public class MainActivity extends AppCompatActivity {
 
             case PAUSED:
                 long newMillis = ((minutes * 60) + seconds) * 1000;
-                createTimer(newMillis, TICK_INTERVAL);
+                createTimer(newMillis, ConstantValues.TICK_INTERVAL_SECOND);
                 buttonText = getString(R.string.clock_stop);
                 newState = ClockStateEnum.STARTED;
                 break;
         }
         button.setText(buttonText);
-        state = newState;
+        clockState = newState;
     }
 
-    public void resetClock(View view) {
-        if (state.equals(ClockStateEnum.NOT_STARTED))
-            return;
-
-        minutes = Math.toIntExact(ORIGINAL_DURATION / (1000 * 60));
-        seconds = Math.toIntExact(ORIGINAL_DURATION / 1000);
-        state = ClockStateEnum.NOT_STARTED;
-        timer.cancel();
-        changeTextView(minutes, seconds);
-        Button startButton = findViewById(R.id.startClockButton);
-        startButton.setText(R.string.clock_start);
+    public void onResetClick(View view) {
+        this.resetGlobalClock();
     }
 
     private void createTimer(long targetMillis, long interval) {
@@ -80,22 +80,36 @@ public class MainActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
                 seconds = (int) (millisUntilFinished / 1000);
                 minutes = (int) ((millisUntilFinished / 1000) / 60);
-                changeTextView(minutes, seconds);
+                updateTextClock(minutes, seconds);
             }
 
             @Override
             public void onFinish() {
-                findViewById(R.id.tomatoView).setAlpha(0);
+                ImageView tomato = findViewById(R.id.tomatoView);
+                tomaccoState.nextStage();
+                tomato.setImageResource(tomaccoState.getDrawableId());
+                resetGlobalClock();
             }
         };
         timer.start();
     }
 
-    private void changeTextView(Integer minutes, Integer seconds) {
+    private void updateTextClock(Integer minutes, Integer seconds) {
         TextView clockTextView = findViewById(R.id.clockTextView);
         String showMinutes = StringUtils.padLeftZeros(minutes.toString(), 2);
         String showSeconds = StringUtils.padLeftZeros(seconds.toString(), 2);
         clockTextView.setText(String.format("%s:%s", showMinutes, showSeconds));
+    }
+
+    private void resetGlobalClock() {
+        if (clockState.equals(ClockStateEnum.NOT_STARTED))
+            return;
+
+        clockState = ClockStateEnum.NOT_STARTED;
+        timer.cancel();
+        updateTextClock(ConstantValues.ORIGINAL_CLOCK_MINUTES, ConstantValues.ORIGINAL_CLOCK_SECONDS);
+        Button startButton = findViewById(R.id.startClockButton);
+        startButton.setText(R.string.clock_start);
     }
 
 }
