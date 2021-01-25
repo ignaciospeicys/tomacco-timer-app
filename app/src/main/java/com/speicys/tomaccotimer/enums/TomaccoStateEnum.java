@@ -1,6 +1,7 @@
 package com.speicys.tomaccotimer.enums;
 
 import com.speicys.tomaccotimer.R;
+import com.speicys.tomaccotimer.constant.ConstVal;
 
 /**
  * A Tomacco state is a vanity feature that allows the user a visual cue for the current session's progress.
@@ -20,7 +21,7 @@ public enum TomaccoStateEnum {
         this.nextStage = nextStage;
     }
 
-    public void nextStage() {
+    public void mature() {
         if (this.nextStage == null)
             return;
 

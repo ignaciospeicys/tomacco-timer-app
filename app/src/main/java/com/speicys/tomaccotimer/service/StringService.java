@@ -1,6 +1,6 @@
-package com.speicys.tomaccotimer.util;
+package com.speicys.tomaccotimer.service;
 
-public class StringUtils {
+public class StringService {
 
     public static String padLeftZeros(String inputString, int length) {
         if (inputString.length() >= length) {

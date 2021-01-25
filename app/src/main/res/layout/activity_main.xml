@@ -4,16 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#2CA66127"
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/startClockButton"
+        android:id="@+id/mainClockButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="84dp"
         android:layout_marginEnd="239dp"
         android:layout_marginBottom="106dp"
-        android:onClick="onStartClick"
+        android:backgroundTint="#C62828"
+        android:onClick="onMainClick"
         android:text="@string/clock_start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,11 +29,12 @@
         android:layout_marginStart="66dp"
         android:layout_marginEnd="84dp"
         android:layout_marginBottom="106dp"
+        android:backgroundTint="#C62828"
         android:onClick="onResetClick"
         android:text="@string/clock_reset"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/startClockButton" />
+        app:layout_constraintStart_toEndOf="@+id/mainClockButton" />
 
     <TextView
         android:id="@+id/clockTextView"
@@ -47,18 +50,32 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/tomatoView"
+        android:id="@+id/tomaccoView"
         android:layout_width="272dp"
         android:layout_height="380dp"
         android:layout_marginStart="70dp"
-        android:layout_marginTop="120dp"
         android:layout_marginEnd="70dp"
-        android:layout_marginBottom="77dp"
+        android:layout_marginBottom="150dp"
         android:contentDescription="@string/tomato_desc"
-        app:layout_constraintBottom_toTopOf="@+id/startClockButton"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/tomato_vanilla_small" />
+
+    <Button
+        android:id="@+id/startRestButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="51dp"
+        android:backgroundTint="#C62828"
+        android:clickable="false"
+        android:onClick="onRestClick"
+        android:text="@string/clock_rest"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tomaccoView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

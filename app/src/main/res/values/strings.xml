@@ -1,7 +1,21 @@
 <resources>
     <string name="app_name">Tomacco Timer</string>
+
+    <!-- button names -->
     <string name="clock_start">Start</string>
     <string name="clock_stop">Stop</string>
+    <string name="clock_rest">Rest</string>
     <string name="clock_reset">Reset</string>
+
+    <!-- object descriptions -->
     <string name="tomato_desc">This Tomato will slowly morph into a Tomacco</string>
+
+    <!-- Toast messages -->
+    <string name="rest_active">Rest mode now active</string>
+
+    <!-- notifications -->
+    <string name="clock_end_notification_name">Tomacco finish</string> <!-- viewable by the user -->
+    <string name="clock_end_notification_description">This notification appears after the clock is up</string>
+    <string name="notification_title">The clock is up!</string>
+    <string name="notification_description">Click here to start a new Tomacco</string>
 </resources>
