@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_wall_distance">80dp</dimen>
+    <dimen name="button_floor_distance">100dp</dimen>
+
+    <dimen name="tomacco_floor_distance">250dp</dimen>
+    <dimen name="tomacco_top_distance">100dp</dimen>
+    <dimen name="tomacco_lateral_distance">0dp</dimen>
+    <dimen name="rest_to_tomacco_vertical">55dp</dimen>
+    <dimen name="rest_lateral_distance">100dp</dimen>
+
+</resources>

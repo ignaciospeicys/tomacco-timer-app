@@ -3,10 +3,14 @@ package com.speicys.tomaccotimer.service;
 import android.media.RingtoneManager;
 import android.net.Uri;
 
+import com.speicys.tomaccotimer.R;
+
 public class SoundService {
 
     public static Uri getAlarmSoundUri() {
         Uri alert = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+
+
 
         if(alert == null){
             // alert is null, using backup ringtone

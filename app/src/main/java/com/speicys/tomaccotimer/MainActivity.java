@@ -4,11 +4,8 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -28,8 +25,16 @@ import androidx.core.app.NotificationManagerCompat;
 import com.speicys.tomaccotimer.constant.ConstVal;
 import com.speicys.tomaccotimer.enums.ClockStateEnum;
 import com.speicys.tomaccotimer.enums.TomaccoStateEnum;
-import com.speicys.tomaccotimer.service.SoundService;
 import com.speicys.tomaccotimer.service.StringService;
+
+import java.util.Arrays;
+
+/**
+ * BUG FIXES:
+ *
+ * 21- check and fix layouts for several screen types (moto g7 power)
+ * 22- either disable landscape or format it differently
+ */
 
 /**
  * future features TODO (0.3+):
@@ -40,7 +45,7 @@ import com.speicys.tomaccotimer.service.StringService;
  * 100- initial popup when app launches (for the first time) explaining what the pomodoro technique is
  * 101- allow users to add tasks and focus on them (individually) with a tomacco
  * 102- after a tomacco finishes, ask the user if they were able to finish task added in #101
- * 103- permanent data storage for overall progress
+ * 103- permanent data storage for overall progress (maintain session if app is closed accidentally, etc)
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -58,22 +63,6 @@ public class MainActivity extends AppCompatActivity {
      * TomaccoStateEnum keeps a global track of Tomacco States, only stored on memory for now
      */
     private TomaccoStateEnum mTomaccoState = TomaccoStateEnum.VANILLA;
-
-    /**
-     * Member MediaPlayer used to play sounds after each Tomacco
-     */
-    private MediaPlayer mPlayer;
-
-    /**
-     * This BroadcastReceiver listens for notification clicks
-     */
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Toast.makeText(context, "Welcome back!", Toast.LENGTH_SHORT).show();
-            mPlayer.stop();
-        }
-    };
 
     /**
      * tracks the last CountDownTimer's millis left on tick
@@ -138,26 +127,26 @@ public class MainActivity extends AppCompatActivity {
         this.playAnimationOnView(R.anim.shrink_and_grow, findViewById(R.id.clockTextView));
     }
 
-    //TODO: I should consider re-directing this button click to the main button one with the rest mode active so as to not repeat myself
+    /**
+     * Triggers an exit from Pre-Rest mode
+     * starts a new clock via onMainClick()
+     */
     public void onRestClick(View view) {
-        mPlayer.stop();
-        mClockState = ClockStateEnum.STARTED;
 
-        createTimer(ConstVal.Clock.OG_REST_DURATION_MILLIS, ConstVal.Clock.TICK_INTERVAL_SECOND);
+        Button mainButton = findViewById(R.id.mainClockButton);
+        onMainClick(mainButton);
+
         ImageView tomacco = findViewById(R.id.tomaccoView);
         tomacco.setImageResource(R.drawable.tomacco_state_rest);
 
         playAnimationOnView(R.anim.downwards_translation, view);
         changeViewAccessibility(false, view);
 
-        Button startButton = findViewById(R.id.mainClockButton);
         Button resetButton = findViewById(R.id.resetClockButton);
-        startButton.setText(R.string.clock_stop);
 
-        playAnimationOnView(R.anim.upwards_translation, startButton, resetButton);
-
-        changeViewAccessibility(true, startButton, resetButton);
-        changeViewColor(getColor(R.color.grey), startButton, resetButton);
+        playAnimationOnView(R.anim.upwards_translation, mainButton, resetButton);
+        changeViewColor(getColor(R.color.grey), mainButton, resetButton);
+        changeViewAccessibility(true, resetButton, mainButton);
 
         Toast.makeText(this, getString(R.string.rest_active), Toast.LENGTH_LONG).show();
     }
@@ -166,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
         mTimer = new CountDownTimer(targetMillis, interval) {
             @Override
             public void onTick(long millisUntilFinished) {
-                int seconds = (int) (millisUntilFinished / 1000);
+                int seconds = (int) (millisUntilFinished / 1000) % 60;
                 int minutes = (int) ((millisUntilFinished / 1000) / 60);
                 mCurrentClockMillis = millisUntilFinished;
                 updateTextClock(minutes, seconds);
@@ -189,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
             startPreRest();
         }
         resetGlobalClock();
-        playMediaSound(SoundService.getAlarmSoundUri(), ConstVal.Sound.ALARM_DURATION_MILLIS);
+        playFinishSound(0);
         triggerTomaccoNotification();
     }
 
@@ -229,10 +218,10 @@ public class MainActivity extends AppCompatActivity {
      * @param enable defines whether or not the given Views are enabled or disabled
      */
     private void changeViewAccessibility(boolean enable, View... views) {
-        for (View view : views) {
+        Arrays.asList(views).stream().forEach(view -> {
             view.setVisibility(enable ? View.VISIBLE : View.GONE);
             view.setClickable(enable);
-        }
+        });
     }
 
     private void changeViewColor(int color, View... views) {
@@ -262,8 +251,10 @@ public class MainActivity extends AppCompatActivity {
         Animation animation = AnimationUtils.loadAnimation(this, animationId);
         AnimationSet animationSet = new AnimationSet(true);
         animationSet.addAnimation(animation);
+        animationSet.setStartOffset(ConstVal.Animation.GROUP_ANIMATION_OFFSET);
         for (View view : views)
-            view.startAnimation(animationSet);
+            view.startAnimation(animation);
+
     }
 
     /**
@@ -293,10 +284,11 @@ public class MainActivity extends AppCompatActivity {
         startButton.setText(R.string.clock_start);
     }
 
-    private void playMediaSound(Uri sound, int durationMillis) {
-        mPlayer = MediaPlayer.create(this, sound);
-        mPlayer.start();
-        new Handler().postDelayed(() -> mPlayer.stop(), durationMillis);
+    private void playFinishSound(int durationMillis) {
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.ta_da_sound);
+        mediaPlayer.start();
+        if(durationMillis != 0)
+            new Handler().postDelayed(() -> mediaPlayer.stop(), durationMillis);
     }
 
     private void triggerTomaccoNotification() {

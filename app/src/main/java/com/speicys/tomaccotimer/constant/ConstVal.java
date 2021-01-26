@@ -7,16 +7,16 @@ public class ConstVal {
 
     public static class Clock {
 
-        public static final long OG_CLOCK_DURATION_MILLIS = 10000L;
+        public static final long OG_CLOCK_DURATION_MILLIS = 1500000L;
         public static final long TICK_INTERVAL_SECOND = 1000L;
 
-        public static final long OG_REST_DURATION_MILLIS = 5000L;
+        public static final long OG_REST_DURATION_MILLIS = 300000L;
 
-        public static final int ORIGINAL_CLOCK_MINUTES = (int) (OG_CLOCK_DURATION_MILLIS / 60000);
-        public static final int ORIGINAL_CLOCK_SECONDS = (int) (OG_CLOCK_DURATION_MILLIS / 1000);
+        public static final int ORIGINAL_CLOCK_MINUTES = (int) (OG_CLOCK_DURATION_MILLIS / 1000) / 60;
+        public static final int ORIGINAL_CLOCK_SECONDS = (int) (OG_CLOCK_DURATION_MILLIS / 1000) % 60;
 
-        public static final int ORIGINAL_REST_MINUTES = (int) (OG_REST_DURATION_MILLIS / 60000);
-        public static final int ORIGINAL_REST_SECONDS = (int) (OG_REST_DURATION_MILLIS / 1000);
+        public static final int ORIGINAL_REST_MINUTES = (int) (OG_REST_DURATION_MILLIS / 1000) / 60;
+        public static final int ORIGINAL_REST_SECONDS = (int) (OG_REST_DURATION_MILLIS / 1000) % 60;
 
     }
 
@@ -28,6 +28,11 @@ public class ConstVal {
     public static class Sound {
 
         public static final int ALARM_DURATION_MILLIS = 5000;
+    }
+
+    public static class Animation {
+
+        public static final long GROUP_ANIMATION_OFFSET = 150;
     }
 
     public static class Notification {
